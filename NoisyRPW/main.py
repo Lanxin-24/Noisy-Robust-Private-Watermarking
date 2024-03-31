@@ -12,9 +12,9 @@ vocabulary = tokenizer.get_vocab()
 
 # Use hash function to simulate LLM
 def random_logit():
-    sign = random.choice([-1, 1])  # 随机选择正负号
-    exponent = random.uniform(0, 1000)  # 在0到1000之间生成指数
-    mantissa = random.uniform(0, 1)  # 在0到1之间生成尾数
+    sign = random.choice([-1, 1]) 
+    exponent = random.uniform(0, 1000) 
+    mantissa = random.uniform(0, 1) 
     return sign * mantissa * math.pow(10, exponent)
 
 def language_model(prompt):
