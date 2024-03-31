@@ -131,34 +131,3 @@ def compute_z_score(green_list_count, beta, n):
     denom = sqrt(beta*(1-beta)/n)
     z = numer/denom
     return z
-
-
-
-
-sigmas = [0, 0.25, 0.5, 0.75, 1.0]
-prompt = ['The', 'quick', 'brown', 'fox', 'jumps', 'over', 'the', 'lazy', 'dog']
-key = secrets.token_bytes(32)
-h = 3
-beta = 0.5
-delta = 5
-n_values = range(1, 201)  
-
-plt.clf()
-plt.figure(constrained_layout=True)
-plt.figure(figsize=(10, 6))
-
-for sigma in sigmas:
-    z_values = []
-    for n in n_values:
-        prompt_result = NoisyRPW(prompt, key, delta, h, n, sigma, beta)
-        green_list_count = count_green_list_words(prompt, prompt_result, key, beta, h)
-        z_scores = compute_z_score(green_list_count, beta, n)
-        z_values.append(z_scores)
-    plt.plot(n_values, z_values, label=f"sigma = {sigma}")
-
-plt.title("Z-Score vs. n for Different Sigma Values")
-plt.xlabel("n")
-plt.ylabel("Z-Score")
-plt.legend()
-plt.grid(True)
-plt.show()
