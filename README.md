@@ -8,9 +8,3 @@ NoisyRPW is a Python implementation of a Noisy Robust Private Watermarking algor
 - Robust against attacks by subsampling.
 - Noisy watermarking ensures differential privacy preservation.
 - Flexible parameters for customization.
-
-## Installation
-You can install NoisyRPW from PyPI using pip:
-
-```bash
-pip install NoisyRPW
