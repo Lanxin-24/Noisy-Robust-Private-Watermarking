@@ -16,13 +16,31 @@ vocabulary = tokenizer.get_vocab()
 # Use hash function to simulate LLM
 def random_logit():
     sign = random.choice([-1, 1]) 
-    exponent = random.uniform(-10, 10) 
+    exponent = random.uniform(-2, 2)
     mantissa = random.uniform(0, 1) 
     return sign * mantissa * math.pow(10, exponent)
 
+def language_model(prompt):
+    # Calculate hash value of the prompt
+    hash_value = hashlib.sha3_256(' '.join(prompt).encode()).digest()
+
+    # Seed a random number generator with the hash value
+    seed = int.from_bytes(hash_value, byteorder='big')
+    random.seed(seed)
+    
+    # Generate logit vector for each word in the vocabulary
+    logits = {}
+    for word in vocabulary:
+        logits[word] = random_logit()
+
+    return logits
+
+
+
+# Define the Noisy Robust Private Watermarking Algorithm function
 def NoisyRPW(prompt, key, delta, h, n, sigma, beta):
     N_p = len(prompt)
-    prompt_result = prompt
+    prompt_result = prompt[:]
 
     # Generate n tokens
     for t in range(n):
