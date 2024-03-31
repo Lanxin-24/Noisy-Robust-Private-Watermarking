@@ -48,8 +48,8 @@ def calculate_mu(n, h, sigma):
 def G_mu(mu, alpha):
     return norm.cdf(norm.ppf(1 - alpha) - mu)
 
-n_values_sparse = [10, 100, 200]
-sigmas_sparse = [0.5, 1.0]
+n_values_sparse = [10, 50]
+sigmas_sparse = [0.75, 1.0]
 alpha_values = np.linspace(0.001, 0.999, 100)
 
 ax2 = axes[1]
