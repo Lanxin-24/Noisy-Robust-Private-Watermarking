@@ -1,5 +1,10 @@
 import NoisyRPW_Simulation
 import Detection
+import secrets
+import matplotlib.pyplot as plt
+import numpy as np
+from scipy.stats import norm
+
 
 # Define parameters
 prompt = ['The', 'quick', 'brown', 'fox', 'jumps', 'over', 'the', 'lazy', 'dog']
@@ -35,5 +40,29 @@ plt.show()
 
 
 # Plot trade-off funcyion for different n and sigma values
+def calculate_mu(n, h, sigma):
+    mu = np.sqrt(2 * n) / h * np.sqrt(np.exp(sigma ** (-2)) * norm.cdf(1.5 * sigma ** -1) + 3 * norm.cdf(-0.5 * sigma ** -1) - 2)
+    return mu
+
+def G_mu(mu, alpha):
+    return norm.cdf(norm.ppf(1 - alpha) - mu)
+
+n_values_sparse = [10, 50, 100, 200]
+alpha_values = np.linspace(0.001, 0.999, 100)
+
+plt.figure(figsize=(10, 6))
+
+for n in n_values:
+    for sigma in sigma_values:
+        mu = calculate_mu(n, h, sigma)
+        G_mu_values = G_mu(mu, alpha_values)
+        plt.plot(alpha_values, G_mu_values, label=f'n={n}, sigma={sigma}')
+
+plt.title("GDP for Different n and Sigma Values")
+plt.xlabel("Type I Error")
+plt.ylabel("Type II Error")
+plt.legend()
+plt.grid(True)
+plt.show()
 
 
