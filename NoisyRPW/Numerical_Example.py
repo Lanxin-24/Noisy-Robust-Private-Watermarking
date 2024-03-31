@@ -50,6 +50,8 @@ def G_mu(mu, alpha):
 n_values_sparse = [10, 50, 100, 200]
 alpha_values = np.linspace(0.001, 0.999, 100)
 
+plt.clf()
+plt.figure(constrained_layout=True)
 plt.figure(figsize=(10, 6))
 
 for n in n_values:
