@@ -24,9 +24,9 @@ plt.figure(figsize=(10, 6))
 for sigma in sigmas:
     z_values = []
     for n in n_values:
-        prompt_result = NoisyRPW.NoisyRPW(prompt, key, delta, h, n, sigma, beta)
-        green_list_count = NoisyRPW.count_green_list_words(prompt, prompt_result, key, beta, h)
-        z_scores = NoisyRPW.compute_z_score(green_list_count, beta, n)
+        prompt_result = NoisyRPW_Simulation.NoisyRPW(prompt, key, delta, h, n, sigma, beta)
+        green_list_count = Detection.count_green_list_words(prompt, prompt_result, key, beta, h)
+        z_scores = Detection.compute_z_score(green_list_count, beta, n)
         z_values.append(z_scores)
     plt.plot(n_values, z_values, label=f"sigma = {sigma}")
 
