@@ -36,15 +36,5 @@ print("Green List Count:", green_list_count)
 z_score = Detection.compute_z_score(green_list_count, beta, n)
 print("Z-score:", z_score)
 ```
-## Dependencies
-
-This project relies on the following Python libraries:
-
-- `numpy`: A powerful library for numerical computing in Python.
-- `matplotlib`: A comprehensive library for creating static, animated, and interactive visualizations in Python.
-- `scipy`: A library used for scientific computing and technical computing.
-
-You can install these dependencies using the following command:
-
-```bash
-pip install numpy matplotlib scipy
+### Numerical Example
+This section provides a numerical example demonstrating the usage of the Noisy Robust Private Watermarking (NoisyRPW) algorithm and its detection. It also plots the z-score as a function of n against different values of sigma, as well as the trade-off function for different n and sigma values. The result reveals that we can effectively preserve the differential privacy with little detection cost.
