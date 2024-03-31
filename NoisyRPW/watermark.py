@@ -38,7 +38,9 @@ def language_model(prompt):
 def NoisyRPW(prompt, key, delta, h, n, sigma, beta):
 
     # Generate n tokens
-    for t in range(n+1):
+    for t in range(n):
+        
+        N_p = len(prompt)
         
         # Apply the language_model to obtain logit vector
         logits = language_model(prompt)
@@ -65,7 +67,7 @@ def NoisyRPW(prompt, key, delta, h, n, sigma, beta):
             for i in range(1, h+1):
                 H = hmac.new(key, digestmod=hashlib.sha3_256)
                 H.update(token.encode())
-                H.update(prompt[t - i].encode())
+                H.update(prompt[N_p + t - i].encode())
                 H_i = int.from_bytes(H.digest(), byteorder='big')
                 if H_i < H_star:
                     H_star = H_i
