@@ -20,32 +20,15 @@ def random_logit():
     mantissa = random.uniform(0, 1) 
     return sign * mantissa * math.pow(10, exponent)
 
-def language_model(prompt):
-    # Calculate hash value of the prompt
-    hash_value = hashlib.sha3_256(' '.join(prompt).encode()).digest()
-
-    # Seed a random number generator with the hash value
-    seed = int.from_bytes(hash_value, byteorder='big')
-    random.seed(seed)
-    
-    # Generate logit vector for each word in the vocabulary
-    logits = {}
-    for word in vocabulary:
-        logits[word] = random_logit()
-
-    return logits
-
-
-
-# Define the Noisy Robust Private Watermarking Algorithm function
 def NoisyRPW(prompt, key, delta, h, n, sigma, beta):
     N_p = len(prompt)
+    prompt_result = prompt
 
     # Generate n tokens
     for t in range(n):
         
         # Apply the language_model to obtain logit vector
-        logits = language_model(prompt)
+        logits = language_model(prompt_result)
         word_vector = list(logits.keys())
         logit_vector = np.array(list(logits.values()))
 
@@ -69,7 +52,7 @@ def NoisyRPW(prompt, key, delta, h, n, sigma, beta):
             for i in range(1, h+1):
                 H = hmac.new(key, digestmod=hashlib.sha3_256)
                 H.update(token.encode())
-                new_varnew_var = H.update(prompt[N_p + t - i].encode())
+                new_varnew_var = H.update(prompt_result[N_p + t - i].encode())
                 
                 H_i = int.from_bytes(H.digest(), byteorder='big')
                 if H_i < H_star:
@@ -85,12 +68,12 @@ def NoisyRPW(prompt, key, delta, h, n, sigma, beta):
 
             # Decision making
             if random_bit == 1:
-                prompt.append(token) 
+                prompt_result.append(token)
                 break
             elif random_bit == 0 and sorted_noisy_logit_vector[k+1] < sorted_noisy_logit_vector[0] - delta:
-                prompt.append(sorted_word_vector[0]) 
+                prompt_result.append(sorted_word_vector[0])
                 break
             else:
                 k += 1
 
-    return prompt
+    return prompt_result
