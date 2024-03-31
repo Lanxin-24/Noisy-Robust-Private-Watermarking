@@ -4,16 +4,22 @@ import numpy as np
 import hashlib
 import hmac
 import secrets
+from math import sqrt
+import matplotlib.pyplot as plt
+
+
 
 # Get the vocabulary of the GPT-2 model
 from transformers import GPT2Tokenizer
 tokenizer = GPT2Tokenizer.from_pretrained("gpt2")
 vocabulary = tokenizer.get_vocab()
 
+
+
 # Use hash function to simulate LLM
 def random_logit():
     sign = random.choice([-1, 1]) 
-    exponent = random.uniform(0, 1000) 
+    exponent = random.uniform(-10, 10) 
     mantissa = random.uniform(0, 1) 
     return sign * mantissa * math.pow(10, exponent)
 
@@ -36,16 +42,15 @@ def language_model(prompt):
 
 # Define the Noisy Robust Private Watermarking Algorithm function
 def NoisyRPW(prompt, key, delta, h, n, sigma, beta):
+    N_p = len(prompt)
 
     # Generate n tokens
     for t in range(n):
         
-        N_p = len(prompt)
-        
         # Apply the language_model to obtain logit vector
         logits = language_model(prompt)
         word_vector = list(logits.keys())
-        logit_vector = list(logits.values())
+        logit_vector = np.array(list(logits.values()))
 
         # Add noise to the logit vector
         noise = np.random.normal(loc=0, scale=delta*sigma, size=logit_vector.shape)
@@ -67,7 +72,8 @@ def NoisyRPW(prompt, key, delta, h, n, sigma, beta):
             for i in range(1, h+1):
                 H = hmac.new(key, digestmod=hashlib.sha3_256)
                 H.update(token.encode())
-                H.update(prompt[N_p + t - i].encode())
+                new_varnew_var = H.update(prompt[N_p + t - i].encode())
+                
                 H_i = int.from_bytes(H.digest(), byteorder='big')
                 if H_i < H_star:
                     H_star = H_i
@@ -91,3 +97,68 @@ def NoisyRPW(prompt, key, delta, h, n, sigma, beta):
                 k += 1
 
     return prompt
+
+
+
+def count_green_list_words(prompt, prompt_result, key, beta, h):
+    green_list_count = 0
+    N_p = len(prompt)
+
+    # Check if the word t is a green list word and count
+    for t in range(N_p, len(prompt_result)):    
+        word = prompt_result[t]
+        
+        # Compute H and i* for the given word
+        H_star = float('inf')
+        for i in range(1, h+1):
+            H = hmac.new(key, digestmod=hashlib.sha3_256)
+            H.update(word.encode())
+            H.update(prompt_result[t - i].encode())
+            H_i = int.from_bytes(H.digest(), byteorder='big')
+            if H_i < H_star:
+                H_star = H_i
+
+        # Generate a random bit based on H_i*
+        random.seed(H_star)
+        rand = random.random()
+        if rand < beta:
+            green_list_count += 1
+            
+    return green_list_count
+
+def compute_z_score(green_list_count, beta, n):
+    numer = green_list_count/n - beta
+    denom = sqrt(beta*(1-beta)/n)
+    z = numer/denom
+    return z
+
+
+
+
+sigmas = [0, 0.25, 0.5, 0.75, 1.0]
+prompt = ['The', 'quick', 'brown', 'fox', 'jumps', 'over', 'the', 'lazy', 'dog']
+key = secrets.token_bytes(32)
+h = 3
+beta = 0.5
+delta = 5
+n_values = range(1, 201)  
+
+plt.clf()
+plt.figure(constrained_layout=True)
+plt.figure(figsize=(10, 6))
+
+for sigma in sigmas:
+    z_values = []
+    for n in n_values:
+        prompt_result = NoisyRPW(prompt, key, delta, h, n, sigma, beta)
+        green_list_count = count_green_list_words(prompt, prompt_result, key, beta, h)
+        z_scores = compute_z_score(green_list_count, beta, n)
+        z_values.append(z_scores)
+    plt.plot(n_values, z_values, label=f"sigma = {sigma}")
+
+plt.title("Z-Score vs. n for Different Sigma Values")
+plt.xlabel("n")
+plt.ylabel("Z-Score")
+plt.legend()
+plt.grid(True)
+plt.show()
