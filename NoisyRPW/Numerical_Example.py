@@ -10,7 +10,9 @@ delta = 5
 n_values = range(1, 201)  
 sigmas = [0, 0.25, 0.5, 0.75, 1.0]
 
-# Generate and plot Z-scores for different sigma values
+
+
+# Generate and plot Z-scores and n for different sigma values
 plt.clf()
 plt.figure(constrained_layout=True)
 plt.figure(figsize=(10, 6))
@@ -29,3 +31,9 @@ plt.ylabel("Z-Score")
 plt.legend()
 plt.grid(True)
 plt.show()
+
+
+
+# Plot trade-off funcyion for different n and sigma values
+
+
